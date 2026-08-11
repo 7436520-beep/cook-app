@@ -149,13 +149,15 @@ a{color:inherit;text-decoration:none}
 .pill .pico{font-size:14px}
 .pill.on .pico{filter:drop-shadow(0 1px 2px rgba(255,143,163,.3))}
 
-/* ====== 内容区：明确绝对定位高度，确保iOS可滚动 ====== */
-.page{flex:1;position:relative;min-height:0}
+/* ====== 内容区：flex 列布局 + 内部滚动 ====== */
+.page{flex:1;position:relative;display:flex;flex-direction:column;min-height:0}
 .content{
-  position:absolute;left:0;right:0;top:0;bottom:0;
+  flex:1;min-height:0;
   overflow-y:auto;-webkit-overflow-scrolling:touch;
   overscroll-behavior:contain;
   padding:4px 24px 80px;
+  -webkit-transform:translateZ(0);
+  transform:translateZ(0);
 }
 
 /* 菜品卡片 - 卡通圆角 */
@@ -225,10 +227,12 @@ a{color:inherit;text-decoration:none}
 
 /* ====== 随机抽菜页 ====== */
 .roulette-page{
-  position:absolute;left:0;right:0;top:0;bottom:0;
+  flex:1;min-height:0;
   overflow-y:auto;-webkit-overflow-scrolling:touch;
   display:flex;flex-direction:column;
   align-items:center;justify-content:center;padding:24px;gap:24px;
+  -webkit-transform:translateZ(0);
+  transform:translateZ(0);
 }
 .roulette-page .title{
   font-size:24px;font-weight:800;color:var(--primary-dark);
@@ -312,6 +316,8 @@ a{color:inherit;text-decoration:none}
   overflow-y:auto;-webkit-overflow-scrolling:touch;
   overscroll-behavior:contain;
   padding:18px 0 40px;
+  -webkit-transform:translateZ(0);
+  transform:translateZ(0);
 }
 
 /* ====== 详情 ====== */
