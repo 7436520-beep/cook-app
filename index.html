@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="今天吃啥">
+<meta name="theme-color" content="#FF8FA3">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍰</text></svg>">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23FFB6C1'/><text x='50' y='73' font-size='58' text-anchor='middle'>🍰</text></svg>">
+<title>🍰 今天吃啥</title>
+<style>
+:root{
+  /* ====== 卡通马卡龙配色 ====== */
+  --bg:#FFF8F0;             /* 奶油米色背景 */
+  --card:#FFFFFF;
+  --side:#FFE4E9;           /* 侧边栏樱花粉 */
+  --side-active:#FFB6C1;    /* 侧边选中糖果粉 */
+  --text:#5C4A4D;           /* 主文字 巧克力棕 */
+  --text2:#A89094;
+  --text3:#D4B8BD;
+  --border:#FFE4E9;
+  --primary:#FF8FA3;        /* 主色：樱花粉 */
+  --primary-light:#FFD6DD;  /* 浅粉 */
+  --primary-dark:#E66B82;
+  --mint:#A8E6CF;           /* 薄荷绿点缀 */
+  --mint-dark:#7BC9A1;
+  --butter:#FFD93D;         /* 奶油黄 */
+  --sky:#B5DEFF;            /* 天空蓝点缀 */
+  --lavender:#C8B6FF;       /* 薰衣草紫点缀 */
+  --star:#FFB347;           /* 蜂蜜橙星 */
+  --shadow:0 4px 12px rgba(255,143,163,.15);
+  --shadow-lg:0 8px 24px rgba(255,143,163,.2);
+  --safeT:env(safe-area-inset-top,0px);
+  --safeB:env(safe-area-inset-bottom,0px);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;-webkit-font-smoothing:antialiased}
+body{
+  font-family:-apple-system,"SF Pro Rounded","PingFang SC","Helvetica Neue",sans-serif;
+  background:var(--bg);color:var(--text);font-size:15px;
+  user-select:none;letter-spacing:.2px;
+}
+input,textarea{user-select:text;-webkit-user-select:text;font-family:inherit}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-thumb{background:var(--primary-light);border-radius:3px}
+a{color:inherit;text-decoration:none}
+
+/* ====== 整体布局 ====== */
+#app{
+  display:flex;height:100%;max-width:1200px;margin:0 auto;
+  position:relative;background:var(--bg);
+}
+
+/* ====== 左侧菜单栏（深色版改为糖果粉色） ====== */
+.sidebar{
+  width:240px;flex-shrink:0;background:var(--side);
+  padding:calc(var(--safeT) + 28px) 18px 18px;
+  display:flex;flex-direction:column;
+  border-right:3px dashed #FFD6DD;
+}
+.sidebar-logo{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 12px 20px;
+  border-bottom:2px dashed var(--primary-light);
+  margin-bottom:16px;
+}
+.sidebar-logo .icon{
+  width:42px;height:42px;border-radius:14px;
+  background:linear-gradient(135deg,#FFB6C1,#FFD6DD);
+  display:flex;align-items:center;justify-content:center;
+  font-size:24px;box-shadow:var(--shadow);
+}
+.sidebar-logo .title{font-size:20px;font-weight:800;color:var(--primary-dark)}
+.sidebar-logo .subtitle{font-size:11px;color:var(--text2);margin-top:2px}
+.menu-item{
+  display:flex;align-items:center;gap:12px;
+  padding:14px 16px;border-radius:18px;
+  margin-bottom:6px;font-size:15px;font-weight:600;
+  color:var(--text2);transition:all .2s;
+  cursor:pointer;
+}
+.menu-item .micon{font-size:20px}
+.menu-item .badge{
+  margin-left:auto;background:var(--primary);color:#fff;
+  font-size:11px;padding:2px 8px;border-radius:10px;font-weight:700;
+}
+.menu-item.on{
+  background:var(--side-active);color:#fff;
+  box-shadow:var(--shadow);
+  transform:translateX(2px);
+}
+.menu-item.on .badge{background:#fff;color:var(--primary-dark)}
+.menu-item:active{transform:scale(.97)}
+.sidebar-fab{
+  margin-top:auto;
+  padding:16px;border-radius:18px;
+  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  color:#fff;font-size:15px;font-weight:700;
+  text-align:center;cursor:pointer;
+  box-shadow:var(--shadow);
+  display:flex;align-items:center;justify-content:center;gap:6px;
+}
+.sidebar-fab:active{transform:scale(.97)}
+
+/* ====== 右侧主区 ====== */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+.topbar{
+  padding:calc(var(--safeT) + 18px) 24px 14px;
+  background:var(--bg);
+  display:flex;flex-direction:column;gap:14px;
+}
+.page-title{font-size:26px;font-weight:800;color:var(--text)}
+.page-title .emoji{font-size:28px}
+.search-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.search-box{
+  flex:1;min-width:200px;
+  display:flex;align-items:center;gap:8px;
+  background:#fff;border:2px solid var(--primary-light);
+  border-radius:20px;padding:10px 16px;
+  transition:all .2s;
+}
+.search-box:focus-within{border-color:var(--primary);box-shadow:0 0 0 4px rgba(255,143,163,.1)}
+.search-box svg{flex-shrink:0;color:var(--text3)}
+.search-box input{flex:1;font-size:14px;background:none;border:none;outline:none;color:var(--text)}
+.search-box .ph{color:var(--text3);font-size:14px}
+
+.filter-pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:2px}
+.pill{
+  display:flex;align-items:center;gap:6px;
+  padding:8px 16px;border-radius:18px;font-size:13px;font-weight:600;
+  background:#fff;color:var(--text2);
+  border:2px solid #FFE4E9;
+  transition:all .2s;cursor:pointer;
+}
+.pill.on{background:var(--primary-light);color:var(--primary-dark);border-color:var(--primary)}
+.pill:active{transform:scale(.95)}
+.pill .pico{font-size:14px}
+.pill.on .pico{filter:drop-shadow(0 1px 2px rgba(255,143,163,.3))}
+
+/* ====== 内容区 ====== */
+.content{
+  flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding:4px 24px 80px;
+}
+
+/* 菜品卡片 - 卡通圆角 */
+.dish{
+  display:flex;gap:14px;padding:14px;
+  background:#fff;border-radius:22px;margin-bottom:12px;
+  align-items:center;
+  box-shadow:var(--shadow);
+  border:2px solid transparent;
+  transition:all .15s;
+}
+.dish:active{border-color:var(--primary-light);transform:scale(.99)}
+.dish .photo{
+  width:72px;height:72px;border-radius:18px;
+  object-fit:cover;flex-shrink:0;background:var(--bg);
+  border:2px solid var(--primary-light);
+}
+.dish .nophoto{
+  width:72px;height:72px;border-radius:18px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--primary-light),#FFF5F7);
+  border:2px solid var(--primary-light);
+  display:flex;align-items:center;justify-content:center;
+  font-size:30px;font-weight:800;color:var(--primary-dark);
+}
+.dish .info{flex:1;min-width:0}
+.dish .name{font-size:17px;font-weight:700;display:flex;align-items:center;gap:6px;color:var(--text)}
+.dish .name .tags{display:flex;gap:4px;margin-left:auto}
+.dish .sub{font-size:12px;color:var(--text2);margin-top:6px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.dish .stars{color:var(--star);font-size:13px;letter-spacing:1px}
+
+.mini-tag{font-size:10px;padding:3px 8px;border-radius:10px;font-weight:700;display:inline-flex;align-items:center;gap:2px}
+.mini-tag.快{background:var(--mint);color:var(--mint-dark)}
+.mini-tag.中{background:var(--butter);color:#C29D00}
+.mini-tag.慢{background:#FFD6DD;color:var(--primary-dark)}
+.mini-tag.荤{background:#FFE4D6;color:#D97744}
+.mini-tag.素{background:var(--mint);color:var(--mint-dark)}
+.mini-tag.汤{background:var(--sky);color:#4A7BC8}
+.mini-tag.早餐{background:var(--butter);color:#C29D00}
+.mini-tag.甜品{background:var(--lavender);color:#7B5BCC}
+.mini-tag.儿童菜{background:#B5DEFF;color:#3A7BC8}
+
+/* 空状态 */
+.empty{text-align:center;padding:80px 20px;color:var(--text2)}
+.empty .icon{font-size:72px;margin-bottom:16px;opacity:.7}
+.empty h3{font-size:18px;font-weight:700;margin-bottom:8px;color:var(--text)}
+.empty p{font-size:13px;line-height:1.7}
+.empty .cta{
+  display:inline-block;margin-top:18px;
+  padding:12px 24px;border-radius:22px;
+  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  color:#fff;font-size:14px;font-weight:700;
+  box-shadow:var(--shadow-lg);cursor:pointer;
+}
+
+/* ====== 浮动添加按钮 ====== */
+.fab{
+  position:fixed;bottom:24px;right:24px;
+  width:60px;height:60px;border-radius:50%;
+  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  color:#fff;font-size:32px;font-weight:300;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 8px 24px rgba(255,143,163,.4);
+  z-index:20;cursor:pointer;
+  border:3px solid #fff;
+}
+.fab:active{transform:scale(.9)}
+
+/* ====== 随机抽菜页 ====== */
+.roulette-page{
+  flex:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;padding:24px;gap:24px;
+}
+.roulette-page .title{
+  font-size:24px;font-weight:800;color:var(--primary-dark);
+  text-align:center;
+}
+.roulette-page .title .emoji{font-size:30px}
+.roulette-card{
+  width:100%;max-width:380px;
+  background:#fff;border-radius:28px;overflow:hidden;
+  box-shadow:var(--shadow-lg);
+  text-align:center;
+  border:3px solid var(--primary-light);
+}
+.roulette-card .rphoto{
+  width:100%;height:220px;object-fit:cover;
+  background:linear-gradient(135deg,var(--primary-light),#FFF5F7);
+}
+.roulette-card .rnophoto{
+  width:100%;height:220px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:90px;
+  background:linear-gradient(135deg,var(--primary-light),#FFF5F7);
+}
+.roulette-card .rinfo{padding:20px}
+.roulette-card .rname{font-size:24px;font-weight:800;margin-bottom:8px;color:var(--text)}
+.roulette-card .rmeta{
+  font-size:13px;color:var(--text2);
+  display:flex;justify-content:center;gap:8px;flex-wrap:wrap;
+}
+.spin-btn{
+  padding:16px 44px;border-radius:26px;
+  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  color:#fff;font-size:17px;font-weight:800;
+  box-shadow:0 6px 20px rgba(255,143,163,.4);
+  cursor:pointer;border:3px solid #fff;
+}
+.spin-btn:active{transform:scale(.95)}
+.skip-btn{color:var(--text2);font-size:14px;padding:8px 20px;cursor:pointer}
+.roulette-hint{
+  font-size:12px;color:var(--text3);text-align:center;line-height:1.6;
+}
+.spinning .roulette-card{animation:shake .08s infinite alternate}
+@keyframes shake{from{transform:translateY(-3px) rotate(-1deg)}to{transform:translateY(3px) rotate(1deg)}}
+
+/* ====== Sheet 弹层 ====== */
+.sheet{
+  position:fixed;inset:0;z-index:100;background:var(--bg);
+  transform:translateY(100%);transition:transform .28s cubic-bezier(.32,.72,0,1);
+  max-width:600px;margin:0 auto;
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.sheet.on{transform:translateY(0)}
+.sheet-bar{
+  display:flex;align-items:center;gap:8px;
+  padding:calc(var(--safeT) + 10px) 16px 12px;
+  background:#fff;
+  border-bottom:2px dashed var(--primary-light);
+}
+.sheet-bar .cancel{
+  color:var(--text2);font-size:15px;
+  padding:6px 12px;border-radius:14px;
+}
+.sheet-bar .save{
+  color:#fff;background:var(--primary);
+  font-size:15px;font-weight:700;
+  padding:8px 18px;border-radius:16px;margin-left:auto;
+  box-shadow:var(--shadow);
+}
+.sheet-bar .del{
+  color:#fff;background:#FF8E8E;
+  font-size:15px;font-weight:700;
+  padding:8px 16px;border-radius:16px;margin-left:auto;
+}
+.sheet-bar .title{font-size:18px;font-weight:800;flex:1;text-align:center;color:var(--text)}
+.sheet-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:18px 0}
+
+/* ====== 详情 ====== */
+.detail-photo{width:100%;height:240px;object-fit:cover;background:var(--bg)}
+.detail-nophoto{
+  width:100%;height:200px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:80px;
+  background:linear-gradient(135deg,var(--primary-light),#FFF5F7);
+}
+.detail-pad{padding:18px 20px}
+.detail-name{font-size:26px;font-weight:800;margin-bottom:8px;color:var(--text)}
+.detail-stars{font-size:18px;color:var(--star);margin-bottom:14px;letter-spacing:2px}
+.detail-meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.section{
+  background:#fff;border-radius:20px;
+  padding:16px;margin-bottom:12px;
+  box-shadow:var(--shadow);
+  border:2px solid #FFF0F3;
+}
+.section h3{
+  font-size:13px;font-weight:800;color:var(--primary-dark);
+  margin-bottom:10px;display:flex;align-items:center;gap:6px;
+}
+.section .body{font-size:14px;line-height:1.7;white-space:pre-wrap;color:var(--text)}
+.rating-row{
+  display:flex;align-items:center;gap:14px;
+  padding:8px 0;border-bottom:1px dashed var(--border);
+}
+.rating-row:last-child{border-bottom:none}
+.rating-row .label{font-size:14px;font-weight:700;min-width:78px;color:var(--text)}
+.rating-row .stars-input{display:flex;gap:3px;font-size:24px;color:var(--star)}
+.rating-row .stars-input span{opacity:.2;transition:opacity .1s;cursor:pointer}
+.rating-row .stars-input span.on{opacity:1}
+.comment{
+  font-size:13px;color:var(--text2);margin-top:10px;
+  padding:10px 14px;background:var(--bg);border-radius:14px;
+  border-left:3px solid var(--primary);
+}
+
+/* ====== 表单 ====== */
+.fg{margin-bottom:18px;padding:0 20px}
+.fg label{
+  font-size:13px;font-weight:700;color:var(--primary-dark);
+  display:block;margin-bottom:8px;
+  display:flex;align-items:center;gap:4px;
+}
+.fg input,.fg textarea{
+  width:100%;background:#fff;border:2px solid var(--primary-light);
+  border-radius:16px;padding:12px 16px;font-size:15px;color:var(--text);
+  outline:none;transition:all .2s;
+}
+.fg input:focus,.fg textarea:focus{
+  border-color:var(--primary);
+  box-shadow:0 0 0 4px rgba(255,143,163,.1);
+}
+.fg textarea{min-height:84px;resize:vertical;line-height:1.6}
+.frow{display:flex;gap:10px;padding:0 20px}
+.frow .fg{flex:1;padding:0}
+.ochips{display:flex;flex-wrap:wrap;gap:8px}
+.oc{
+  padding:8px 16px;border-radius:18px;font-size:13px;font-weight:700;
+  background:#fff;border:2px solid var(--primary-light);color:var(--text2);
+  cursor:pointer;transition:all .15s;
+}
+.oc.on{
+  background:var(--primary);color:#fff;border-color:var(--primary);
+  box-shadow:var(--shadow);
+}
+.oc:active{transform:scale(.95)}
+.photo-upload{display:flex;align-items:center;gap:14px}
+.photo-preview{
+  width:80px;height:80px;border-radius:20px;object-fit:cover;
+  background:var(--bg);border:2px dashed var(--primary-light);
+}
+.photo-placeholder{
+  width:80px;height:80px;border-radius:20px;
+  border:2px dashed var(--primary-light);
+  display:flex;align-items:center;justify-content:center;
+  font-size:32px;color:var(--primary);background:#FFF0F3;
+}
+.upload-btn{
+  font-size:14px;color:var(--primary);font-weight:700;
+  padding:10px 18px;background:var(--primary-light);
+  border-radius:18px;cursor:pointer;
+}
+.upload-btn input{display:none}
+
+/* Toast */
+.toast{
+  position:fixed;bottom:100px;left:50%;
+  transform:translateX(-50%) translateY(20px);
+  background:var(--primary);color:#fff;padding:10px 20px;
+  border-radius:20px;font-size:13px;font-weight:600;
+  z-index:200;opacity:0;transition:all .2s;pointer-events:none;
+  white-space:nowrap;box-shadow:var(--shadow);
+}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* 移动端适配 - 保持左右分栏，侧边栏收窄 */
+@media(max-width:760px){
+  .sidebar{
+    width:72px;padding:12px 8px;
+    align-items:center;
+  }
+  .sidebar-logo{border-bottom:none;padding:0;margin-bottom:12px;flex-direction:column;gap:4px;text-align:center;border-right:none;padding-right:0;margin-right:0}
+  .sidebar-logo .icon{width:36px;height:36px;font-size:20px}
+  .sidebar-logo .title{font-size:10px;font-weight:700}
+  .sidebar-logo .subtitle{display:none}
+  .menu-item{flex-direction:column;gap:4px;padding:10px 4px;font-size:10px;text-align:center;width:100%;min-height:56px;justify-content:center}
+  .menu-item .micon{font-size:20px}
+  .menu-item .badge{display:none}
+  .menu-item span:not(.micon):not(.badge){font-size:11px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+  .sidebar-fab{padding:8px 4px;font-size:10px;flex-direction:column;gap:2px;min-height:56px;justify-content:center}
+  .sidebar-fab span{font-size:20px}
+  .sidebar-fab div:not(:first-child){font-size:11px;line-height:1.2}
+  .topbar{padding:12px 14px 8px}
+  .page-title{font-size:20px}
+  .content{padding:4px 12px 80px}
+  .fab{bottom:16px;right:16px;width:50px;height:50px;font-size:26px}
+  .search-row{flex-wrap:wrap}
+  .filter-pills{overflow-x:auto;flex-wrap:nowrap}
+  .filter-pills::-webkit-scrollbar{display:none}
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ====== 侧边栏 ====== -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="icon">🍰</div>
+    <div>
+      <div class="title">我的菜单</div>
+      <div class="subtitle">记录每一顿美味</div>
+    </div>
+  </div>
+  <div class="menu-item on" data-page="list" onclick="goPage('list')">
+    <span class="micon">🍱</span>全部菜品<span class="badge" id="badgeCount">0</span>
+  </div>
+  <div class="menu-item" data-page="roulette" onclick="goPage('roulette')">
+    <span class="micon">🎲</span>今日推荐
+  </div>
+  <div class="menu-item" data-page="week" onclick="goPage('week')">
+    <span class="micon">📅</span>一周菜单
+  </div>
+  <div class="menu-item" data-page="stats" onclick="goPage('stats')">
+    <span class="micon">📊</span>统计概览
+  </div>
+  <div class="sidebar-fab" onclick="openForm()">
+    <span style="font-size:18px">＋</span>添加新菜
+  </div>
+</aside>
+
+<!-- ====== 主区 ====== -->
+<div class="main">
+  <div id="p-list" class="page">
+    <div class="topbar">
+      <div class="page-title"><span class="emoji">🍱</span>全部菜品</div>
+      <div class="search-row">
+        <div class="search-box">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input id="search" placeholder="搜菜名、食材..." oninput="doSearch()">
+        </div>
+      </div>
+      <div class="filter-pills" id="filters"></div>
+    </div>
+    <div class="content" id="list"></div>
+  </div>
+
+  <div id="p-roulette" class="page" style="display:none">
+    <div class="roulette-page">
+      <div class="title"><span class="emoji">🎲</span>今天就吃这个！</div>
+      <div id="rCard"></div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+        <button class="spin-btn" onclick="spin()">🔄 换一道</button>
+        <button class="skip-btn" onclick="goPage('list')">返回菜单</button>
+      </div>
+      <div class="roulette-hint">从你做过的菜里随机抽一道<br>不想做就点「换一道」</div>
+    </div>
+  </div>
+
+  <div id="p-stats" class="page" style="display:none">
+    <div class="topbar">
+      <div class="page-title"><span class="emoji">📊</span>统计概览</div>
+    </div>
+    <div class="content" id="statsContent"></div>
+  </div>
+
+  <div id="p-week" class="page" style="display:none">
+    <div class="topbar">
+      <div class="page-title"><span class="emoji">📅</span>一周菜单</div>
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button class="pill" onclick="exportWeek()"><span class="pico">📷</span>导出图片</button>
+        <button class="pill" onclick="clearWeek()"><span class="pico">🗑️</span>清空</button>
+      </div>
+    </div>
+    <div class="content" id="weekContent"></div>
+  </div>
+</div>
+
+<!-- 浮动+ -->
+<button class="fab" onclick="openForm()">＋</button>
+
+<!-- 详情Sheet -->
+<div class="sheet" id="detailSheet">
+  <div class="sheet-bar">
+    <button class="cancel" onclick="closeSheet('detailSheet')">‹ 返回</button>
+    <span class="title">菜品详情</span>
+    <button class="del" id="detailDel">删除</button>
+  </div>
+  <div class="sheet-body" id="detailBody"></div>
+</div>
+
+<!-- 表单Sheet -->
+<div class="sheet" id="formSheet">
+  <div class="sheet-bar">
+    <button class="cancel" onclick="closeSheet('formSheet')">取消</button>
+    <span class="title" id="formTitle">添加新菜</span>
+    <button class="save" onclick="saveDish()">保存</button>
+  </div>
+  <div class="sheet-body" id="formBody"></div>
+</div>
+
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const SEED=[
+{id:"s1",name:"番茄炒蛋",cat:"素",time:"快",ingredients:"鸡蛋3个、番茄2个",steps:"1.鸡蛋打散炒七分熟盛出\n2.番茄切块炒出沙\n3.回锅加盐糖调味",photo:"",xhsLink:"https://www.xiaohongshu.com/search_result?keyword=番茄炒蛋菜谱",dyLink:"https://www.douyin.com/search/番茄炒蛋做法",myScore:5,familyScore:5,comment:"国民菜，孩子最爱",lastMade:"2026-07-28"},
+{id:"s2",name:"红烧肉",cat:"荤",time:"慢",ingredients:"五花肉500g、冰糖、葱姜八角",steps:"1.焯水\n2.冰糖炒糖色\n3.加水炖40分钟",photo:"",xhsLink:"https://www.xiaohongshu.com/search_result?keyword=红烧肉菜谱",dyLink:"https://www.douyin.com/search/红烧肉做法",myScore:4,familyScore:5,comment:"孩子嫌肥，下次试前排肉",lastMade:"2026-07-25"},
+{id:"s3",name:"清蒸鳕鱼",cat:"儿童菜",time:"快",ingredients:"鳕鱼一块、葱姜丝",steps:"1.鳕鱼吸干水分\n2.上汽蒸8分钟焖2分钟\n3.淋热油和蒸鱼豉油",photo:"",xhsLink:"https://www.xiaohongshu.com/search_result?keyword=清蒸鳕鱼菜谱",dyLink:"https://www.douyin.com/search/清蒸鳕鱼做法",myScore:5,familyScore:5,comment:"补脑DHA，儿童首选",lastMade:"2026-07-27"},
+{id:"s4",name:"蔬菜鸡蛋饼",cat:"儿童菜",time:"快",ingredients:"鸡蛋2个、面粉50g、胡萝卜丝西葫芦丝",steps:"1.面糊调到酸奶稠度\n2.加蔬菜丝拌匀\n3.小火煎两面金黄",photo:"",xhsLink:"https://www.xiaohongshu.com/search_result?keyword=蔬菜鸡蛋饼菜谱",dyLink:"https://www.douyin.com/search/蔬菜鸡蛋饼做法",myScore:4,familyScore:5,comment:"藏蔬菜利器，挑食娃也吃",lastMade:"2026-07-29"},
+{id:"s5",name:"玉米排骨汤",cat:"汤",time:"慢",ingredients:"排骨400g、甜玉米、胡萝卜、红枣",steps:"1.排骨焯水洗浮沫\n2.加足热水大火烧开\n3.小火炖50分钟加盐",photo:"",xhsLink:"https://www.xiaohongshu.com/search_result?keyword=玉米排骨汤菜谱",dyLink:"https://www.douyin.com/search/玉米排骨汤做法",myScore:4,familyScore:4,comment:"汤清甜，孩子爱喝",lastMade:"2026-07-20"},
+{id:"s6",name:"蒜蓉空心菜",cat:"素",time:"快",ingredients:"空心菜400g、蒜末",steps:"1.菜梗菜叶分开\n2.爆香蒜末先下梗\n3.最后下叶子大火炒20秒",photo:"",xhsLink:"https://www.xiaohongshu.com/search_result?keyword=蒜蓉空心菜菜谱",dyLink:"https://www.douyin.com/search/蒜蓉空心菜做法",myScore:4,familyScore:4,comment:"翠绿不出水的窍门：大火快炒",lastMade:"2026-07-26"}
+];
+
+const CATS=[
+  {k:"荤",emoji:"🍖",color:"荤"},
+  {k:"素",emoji:"🥗",color:"素"},
+  {k:"汤",emoji:"🍲",color:"汤"},
+  {k:"早餐",emoji:"🥞",color:"早餐"},
+  {k:"甜品",emoji:"🍮",color:"甜品"},
+  {k:"儿童菜",emoji:"🧒",color:"儿童菜"}
+];
+const TIMES=[
+  {k:"快",label:"⚡快手菜"},
+  {k:"中",label:"🍳中等"},
+  {k:"慢",label:"🕐耗时长"}
+];
+
+const DB={
+  data:[],
+  load(){try{const d=localStorage.getItem('mydishes_v3');this.data=d?JSON.parse(d):JSON.parse(JSON.stringify(SEED));if(!d)this.save()}catch(e){this.data=JSON.parse(JSON.stringify(SEED))}},
+  save(){localStorage.setItem('mydishes_v3',JSON.stringify(this.data))},
+  get(id){return this.data.find(d=>d.id===id)},
+  add(d){d.id='d'+Date.now();this.data.unshift(d);this.save()},
+  update(id,d){const i=this.data.findIndex(x=>x.id===id);if(i>=0){this.data[i]={...this.data[i],...d,id};this.save()}},
+  del(id){this.data=this.data.filter(d=>d.id!==id);this.save()}
+};
+
+let filter={cat:"",time:""};
+let q="";
+let editId=null;
+let pendingPhoto="";
+let currentPage="list";
+
+const $=id=>document.getElementById(id);
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),1500)}
+function star(n){return '★'.repeat(n)+'☆'.repeat(5-n)}
+function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function dateShort(s){if(!s)return'';const d=s.split('-');return d[1]+'/'+d[2]}
+
+// 页面切换
+function goPage(p){
+  currentPage=p;
+  ['list','roulette','week','stats'].forEach(n=>$(`p-${n}`).style.display=n===p?'':'none');
+  document.querySelectorAll('.menu-item').forEach(m=>{
+    m.classList.toggle('on',m.dataset.page===p);
+  });
+  if(p==='list')renderList();
+  if(p==='roulette')spin();
+  if(p==='week')renderWeek();
+  if(p==='stats')renderStats();
+}
+
+// 筛选
+function renderFilters(){
+  let h=`<button class="pill ${filter.cat===''?'on':''}" onclick="setFilter('cat','')"><span class="pico">🍽️</span>全部分类</button>`;
+  CATS.forEach(c=>{
+    h+=`<button class="pill ${filter.cat===c.k?'on':''}" onclick="setFilter('cat','${c.k}')"><span class="pico">${c.emoji}</span>${c.k}</button>`;
+  });
+  h+=`<button class="pill ${filter.time===''?'on':''}" onclick="setFilter('time','')" style="margin-left:auto"><span class="pico">⏱</span>不限时间</button>`;
+  TIMES.forEach(t=>{
+    h+=`<button class="pill ${filter.time===t.k?'on':''}" onclick="setFilter('time','${t.k}')"><span class="pico"></span>${t.label}</button>`;
+  });
+  $('filters').innerHTML=h;
+}
+function setFilter(k,v){filter[k]=v;renderFilters();renderList()}
+function doSearch(){q=$('search').value.toLowerCase();renderList()}
+
+// 列表
+function getFiltered(){
+  let l=DB.data.slice();
+  if(filter.cat)l=l.filter(d=>d.cat===filter.cat);
+  if(filter.time)l=l.filter(d=>d.time===filter.time);
+  if(q){l=l.filter(d=>(d.name+d.ingredients+d.comment).toLowerCase().includes(q))}
+  l.sort((a,b)=>(b.familyScore||0)+(b.myScore||0)-(a.familyScore||0)-(a.myScore||0));
+  return l;
+}
+
+function renderList(){
+  const l=getFiltered();
+  $('badgeCount').textContent=l.length;
+  const el=$('list');
+  if(l.length===0){
+    el.innerHTML=`<div class="empty">
+      <div class="icon">🍽️</div>
+      <h3>还没有菜品记录</h3>
+      <p>点击右下角 + 或左侧「添加新菜」按钮<br>开始记录你的美味厨房</p>
+      <div class="cta" onclick="openForm()">🌟 添加第一道菜</div>
+    </div>`;
+    return;
+  }
+  el.innerHTML=l.map(d=>{
+    const photo=d.photo?`<img class="photo" src="${d.photo}">`:`<div class="nophoto">${esc(d.name[0]||'菜')}</div>`;
+    const tags=`<span class="mini-tag ${d.cat}">${d.cat}</span><span class="mini-tag ${d.time}">${d.time==='快'?'快手':d.time==='中'?'中等':'耗时'}</span>`;
+    const lastTxt=d.lastMade?`📅 上次：${dateShort(d.lastMade)}`:'';
+    return `<div class="dish" onclick="openDetail('${d.id}')">
+      ${photo}
+      <div class="info">
+        <div class="name">${esc(d.name)}<span class="tags">${tags}</span></div>
+        <div class="sub">
+          <span class="stars">${star(d.familyScore||0)}</span>
+          ${lastTxt?`<span>${lastTxt}</span>`:'<span style="color:var(--text3)">还没做过</span>'}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// 详情
+function openDetail(id){
+  const d=DB.get(id);if(!d)return;
+  const photo=d.photo?`<img class="detail-photo" src="${d.photo}">`:`<div class="detail-nophoto">${esc(d.name[0]||'菜')}</div>`;
+  $('detailBody').innerHTML=`
+    ${photo}
+    <div class="detail-pad">
+      <div class="detail-name">${esc(d.name)}</div>
+      <div class="detail-stars">${star(d.familyScore||0)}</div>
+      <div class="detail-meta">
+        <span class="mini-tag ${d.cat}">${d.cat}</span>
+        <span class="mini-tag ${d.time}">${d.time==='快'?'快手菜':d.time==='中'?'中等':'耗时长'}</span>
+        ${d.lastMade?`<span style="font-size:12px;color:var(--text2)">📅 ${d.lastMade}</span>`:''}
+      </div>
+      <div class="section">
+        <h3>🥬 食材用量</h3>
+        <div class="body">${esc(d.ingredients)}</div>
+      </div>
+      <div class="section">
+        <h3>👩‍🍳 做法笔记</h3>
+        <div class="body">${esc(d.steps)}</div>
+      </div>
+      ${(d.xhsLink||d.dyLink)?`<div class="section">
+        <h3>🎬 视频教程</h3>
+        <div style="display:flex;gap:10px;margin-top:4px">
+          ${d.xhsLink?`<a href="${esc(d.xhsLink)}" target="_blank" style="flex:1;padding:14px;border-radius:16px;background:#FF2442;color:#fff;text-align:center;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:6px;text-decoration:none">📕 小红书做法</a>`:''}
+          ${d.dyLink?`<a href="${esc(d.dyLink)}" target="_blank" style="flex:1;padding:14px;border-radius:16px;background:#000;color:#fff;text-align:center;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:6px;text-decoration:none">🎵 抖音做法</a>`:''}
+        </div>
+      </div>`:''}
+      <div class="section">
+        <h3>⭐ 评分</h3>
+        <div class="rating-row"><span class="label">我的评分</span><span class="stars-input">${star(d.myScore||0)}</span></div>
+        <div class="rating-row"><span class="label">家人评分</span><span class="stars-input">${star(d.familyScore||0)}</span></div>
+        ${d.comment?`<div class="comment">💬 ${esc(d.comment)}</div>`:''}
+      </div>
+      <div style="height:20px"></div>
+    </div>`;
+  $('detailDel').onclick=()=>deleteDish(id);
+  $('detailSheet').classList.add('on');
+}
+
+function deleteDish(id){
+  if(!confirm('删除这道菜？'))return;
+  DB.del(id);
+  closeSheet('detailSheet');
+  renderList();
+  toast('已删除 🗑️');
+}
+
+// 表单
+function openForm(id){
+  editId=id||null;
+  pendingPhoto="";
+  const d=id?DB.get(id):{};
+  $('formTitle').textContent=id?'编辑菜品':'✨ 添加新菜';
+  const catHtml=CATS.map(c=>`<button class="oc ${(d.cat||'')===c.k?'on':''}" data-k="cat" data-v="${c.k}" onclick="pickOc(this)">${c.emoji} ${c.k}</button>`).join('');
+  const timeHtml=TIMES.map(t=>`<button class="oc ${(d.time||'')===t.k?'on':''}" data-k="time" data-v="${t.k}" onclick="pickOc(this)">${t.label}</button>`).join('');
+  const today=new Date().toISOString().slice(0,10);
+  $('formBody').innerHTML=`
+    <div class="fg">
+      <label>🍽️ 菜品名称</label>
+      <input id="f_name" value="${esc(d.name||'')}" placeholder="如：番茄炒蛋">
+    </div>
+    <div class="fg">
+      <label>📷 成品照片</label>
+      <div class="photo-upload">
+        ${d.photo?`<img class="photo-preview" src="${d.photo}" id="photoPrev">`:`<div class="photo-placeholder" id="photoPrev">📷</div>`}
+        <label class="upload-btn">${d.photo?'🔄 换一张':'📷 添加照片'}<input type="file" accept="image/*" onchange="loadPhoto(this)"></label>
+      </div>
+    </div>
+    <div class="fg"><label>🏷️ 分类</label><div class="ochips">${catHtml}</div></div>
+    <div class="fg"><label>⏱️ 耗时</label><div class="ochips">${timeHtml}</div></div>
+    <div class="fg"><label>🥬 食材用量</label><textarea id="f_ing" placeholder="鸡蛋3个、番茄2个...">${esc(d.ingredients||'')}</textarea></div>
+    <div class="fg"><label>👩‍🍳 做法笔记</label><textarea id="f_steps" placeholder="1.&#10;2.&#10;3.">${esc(d.steps||'')}</textarea></div>
+    <div class="fg"><label>⭐ 我的评分</label><div class="stars-input" id="f_my" style="font-size:30px">${[1,2,3,4,5].map(i=>`<span class="${(d.myScore||0)>=i?'on':''}" data-v="${i}" onclick="pickStar('f_my',${i})">★</span>`).join('')}</div></div>
+    <div class="fg"><label>💖 家人评分</label><div class="stars-input" id="f_fam" style="font-size:30px">${[1,2,3,4,5].map(i=>`<span class="${(d.familyScore||0)>=i?'on':''}" data-v="${i}" onclick="pickStar('f_fam',${i})">★</span>`).join('')}</div></div>
+    <div class="fg"><label>💬 心得</label><textarea id="f_comment" placeholder="孩子爱不爱吃、下次怎么改良...">${esc(d.comment||'')}</textarea></div>
+    <div class="fg"><label>📕 小红书做法链接</label><input id="f_xhs" value="${esc(d.xhsLink||'')}" placeholder="粘贴小红书菜谱笔记链接"></div>
+    <div class="fg"><label>🎵 抖音做法链接</label><input id="f_dy" value="${esc(d.dyLink||'')}" placeholder="粘贴抖音菜谱视频链接"></div>
+    <div class="fg"><label>📅 上次做的时间</label><input id="f_date" type="date" value="${d.lastMade||today}"></div>
+    <div style="height:30px"></div>
+  `;
+  if(d.photo)pendingPhoto=d.photo;
+  $('formSheet').classList.add('on');
+}
+
+function pickOc(btn){
+  const siblings=btn.parentElement.querySelectorAll('.oc');
+  siblings.forEach(s=>{if(s.dataset.k===btn.dataset.k)s.classList.remove('on')});
+  btn.classList.add('on');
+}
+function pickStar(id,n){
+  const spans=$(id).querySelectorAll('span');
+  spans.forEach((s,i)=>s.classList.toggle('on',i<n));
+}
+function loadPhoto(input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    pendingPhoto=e.target.result;
+    const prev=$('photoPrev');
+    if(prev.tagName==='IMG'){prev.src=pendingPhoto}
+    else{prev.outerHTML=`<img class="photo-preview" id="photoPrev" src="${pendingPhoto}">`}
+  };
+  reader.readAsDataURL(file);
+}
+
+function saveDish(){
+  const name=$('f_name').value.trim();
+  if(!name){toast('请输入菜名 🍽️');return}
+  const cat=document.querySelector('[data-k="cat"].on')?.dataset.v||'素';
+  const time=document.querySelector('[data-k="time"].on')?.dataset.v||'快';
+  const myScore=$('f_my').querySelectorAll('.on').length;
+  const familyScore=$('f_fam').querySelectorAll('.on').length;
+  const data={
+    name,cat,time,
+    ingredients:$('f_ing').value.trim(),
+    steps:$('f_steps').value.trim(),
+    myScore,familyScore,
+    comment:$('f_comment').value.trim(),
+    lastMade:$('f_date').value,
+    photo:pendingPhoto,
+    xhsLink:$('f_xhs').value.trim(),
+    dyLink:$('f_dy').value.trim()
+  };
+  if(editId){DB.update(editId,data);toast('已更新 ✨')}
+  else{DB.add(data);toast('已添加「'+name+'」🎉')}
+  closeSheet('formSheet');
+  renderList();
+}
+
+// 随机抽菜
+function spin(){
+  if(DB.data.length===0){
+    $('rCard').innerHTML=`<div style="text-align:center;padding:40px;color:var(--text3)"><div style="font-size:60px;margin-bottom:16px">🍰</div>还没有菜<br>先添加几道菜再来抽吧</div>`;
+    return;
+  }
+  const card=$('rCard');
+  card.parentElement.classList.add('spinning');
+  let count=0;
+  const interval=setInterval(()=>{
+    const d=DB.data[Math.floor(Math.random()*DB.data.length)];
+    renderRoulette(d);
+    count++;
+    if(count>=14){
+      clearInterval(interval);
+      card.parentElement.classList.remove('spinning');
+    }
+  },70);
+}
+
+function renderRoulette(d){
+  const photo=d.photo?`<img class="rphoto" src="${d.photo}">`:`<div class="rnophoto">${esc(d.name[0]||'菜')}</div>`;
+  $('rCard').innerHTML=`
+    <div onclick="openDetail('${d.id}')" style="cursor:pointer">
+      ${photo}
+      <div class="rinfo">
+        <div class="rname">${esc(d.name)}</div>
+        <div class="rmeta">
+          <span class="mini-tag ${d.cat}">${d.cat}</span>
+          <span>${d.time==='快'?'快手菜':d.time==='中'?'中等':'耗时长'}</span>
+          <span style="color:var(--star)">${star(d.familyScore||0)}</span>
+        </div>
+        ${d.ingredients?`<div style="font-size:13px;color:var(--text2);margin-top:10px;line-height:1.6">🥬 ${esc(d.ingredients)}</div>`:''}
+        ${d.comment?`<div style="font-size:12px;color:var(--text3);margin-top:8px">💬 ${esc(d.comment)}</div>`:''}
+      </div>
+    </div>`;
+}
+
+// ====== 一周菜单 ======
+const DAYS=['周一','周二','周三','周四','周五','周六','周日'];
+const MEALS=[{k:'早',emoji:'🌅'},{k:'午',emoji:'☀️'},{k:'晚',emoji:'🌙'}];
+
+function getMealplan(){try{return JSON.parse(localStorage.getItem('wb_mealplan_v2')||'{}')}catch(e){return{}}}
+function saveMealplan(m){localStorage.setItem('wb_mealplan_v2',JSON.stringify(m))}
+
+function renderWeek(){
+  const mp=getMealplan();
+  const el=$('weekContent');
+  let html='';
+  DAYS.forEach(day=>{
+    html+=`<div style="background:#fff;border-radius:20px;padding:14px;margin-bottom:10px;box-shadow:var(--shadow);border:2px solid #FFF0F3">`;
+    html+=`<div style="font-size:15px;font-weight:800;margin-bottom:10px;color:var(--text)">📅 ${day}</div>`;
+    MEALS.forEach(meal=>{
+      const key=day+meal.k;
+      const id=mp[key];
+      const d=id?DB.get(id):null;
+      if(d){
+        html+=`<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+          <span style="font-size:18px;width:28px;text-align:center">${meal.emoji}</span>
+          <div style="flex:1;display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:14px;background:var(--bg);border:2px solid var(--primary-light);cursor:pointer" onclick="pickMeal('${key}')">
+            <span class="mini-tag ${d.cat}" style="flex-shrink:0">${d.cat}</span>
+            <span style="font-size:14px;font-weight:600;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(d.name)}</span>
+            <span style="color:var(--star);font-size:12px">${star(d.familyScore||0)}</span>
+          </div>
+          <button onclick="removeMeal('${key}')" style="color:var(--text3);font-size:18px;padding:4px 8px;cursor:pointer;background:none;border:none">✕</button>
+        </div>`;
+      }else{
+        html+=`<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+          <span style="font-size:18px;width:28px;text-align:center">${meal.emoji}</span>
+          <div style="flex:1;padding:8px 12px;border-radius:14px;border:2px dashed var(--border);color:var(--text3);font-size:13px;cursor:pointer;display:flex;align-items:center;gap:6px" onclick="pickMeal('${key}')">
+            <span>＋</span><span>添加${meal.k}餐</span>
+          </div>
+        </div>`;
+      }
+    });
+    html+=`</div>`;
+  });
+  html+=`<div style="text-align:center;padding:12px;color:var(--text3);font-size:12px">点击格子选择菜品 · 点 ✕ 删除</div>`;
+  el.innerHTML=html;
+}
+
+let pickerTarget='';
+function pickMeal(key){
+  pickerTarget=key;
+  openMealPicker();
+}
+function removeMeal(key){
+  const mp=getMealplan();
+  delete mp[key];
+  saveMealplan(mp);
+  renderWeek();
+}
+
+function openMealPicker(){
+  const list=DB.data.slice().sort((a,b)=>(b.familyScore||0)-(a.familyScore||0));
+  if(list.length===0){toast('先添加菜品再来规划');return}
+  $('formTitle').textContent='🍽️ 选择菜品';
+  $('formBody').innerHTML=`
+    <div style="padding:0 16px">
+      <input id="pickerSearch" placeholder="🔍 搜索菜名..." oninput="filterPicker()" style="width:100%;background:#fff;border:2px solid var(--primary-light);border-radius:16px;padding:10px 16px;font-size:15px;margin-bottom:12px;outline:none;color:var(--text)">
+    </div>
+    <div id="pickerList">${list.map(d=>`<div onclick="pickMealDish('${d.id}')" style="display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;border-bottom:1px solid var(--border)">
+      <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--primary-light),#FFF5F7);display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--primary-dark);font-size:18px">${esc(d.name[0])}</div>
+      <div style="flex:1"><div style="font-size:15px;font-weight:600">${esc(d.name)}</div><div style="font-size:12px;color:var(--text2)"><span class="mini-tag ${d.cat}">${d.cat}</span> ${star(d.familyScore||0)}</div></div>
+      <span style="color:var(--primary);font-size:18px">›</span>
+    </div>`).join('')}</div>`;
+  $('formSheet').classList.add('on');
+}
+function filterPicker(){
+  const q=$('pickerSearch').value.toLowerCase();
+  const list=DB.data.filter(d=>d.name.toLowerCase().includes(q)).sort((a,b)=>(b.familyScore||0)-(a.familyScore||0));
+  $('pickerList').innerHTML=list.map(d=>`<div onclick="pickMealDish('${d.id}')" style="display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;border-bottom:1px solid var(--border)">
+    <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--primary-light),#FFF5F7);display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--primary-dark);font-size:18px">${esc(d.name[0])}</div>
+    <div style="flex:1"><div style="font-size:15px;font-weight:600">${esc(d.name)}</div><div style="font-size:12px;color:var(--text2)"><span class="mini-tag ${d.cat}">${d.cat}</span> ${star(d.familyScore||0)}</div></div>
+    <span style="color:var(--primary);font-size:18px">›</span>
+  </div>`).join('');
+}
+function pickMealDish(id){
+  const mp=getMealplan();
+  mp[pickerTarget]=id;
+  saveMealplan(mp);
+  closeSheet('formSheet');
+  renderWeek();
+  toast('已安排 ✨');
+}
+function clearWeek(){
+  if(!confirm('清空一周菜单？'))return;
+  saveMealplan({});
+  renderWeek();
+  toast('已清空');
+}
+function exportWeek(){
+  const mp=getMealplan();
+  const canvas=document.createElement('canvas');
+  const W=750,H=300+DAYS.length*80+40;
+  canvas.width=W;canvas.height=H;
+  const ctx=canvas.getContext('2d');
+  ctx.fillStyle='#FFF8F0';ctx.fillRect(0,0,W,H);
+  ctx.fillStyle='#E66B82';ctx.font='bold 28px sans-serif';ctx.fillText('📅 本周家庭菜单',40,50);
+  ctx.fillStyle='#A89094';ctx.font='14px sans-serif';ctx.fillText('生成于 '+new Date().toLocaleDateString('zh-CN'),40,75);
+  // 表头
+  ctx.fillStyle='#FFD6DD';ctx.fillRect(40,100,W-80,36);
+  ctx.fillStyle='#5C4A4D';ctx.font='bold 14px sans-serif';ctx.textBaseline='middle';
+  ctx.fillText('日期',55,118);
+  ['🌅早','☀️午','🌙晚'].forEach((m,i)=>ctx.fillText(m,[220,400,580][i],118));
+  // 每天
+  DAYS.forEach((day,di)=>{
+    const y=136+di*80;
+    if(di%2===0){ctx.fillStyle='#FFF0F3';ctx.fillRect(40,y,W-80,80)}
+    ctx.fillStyle='#5C4A4D';ctx.font='bold 15px sans-serif';ctx.fillText(day,55,y+40);
+    MEALS.forEach((meal,mi)=>{
+      const key=day+meal.k;
+      const id=mp[key];
+      const d=id?DB.get(id):null;
+      ctx.font='13px sans-serif';
+      ctx.fillStyle=d?'#5C4A4D':'#D4B8BD';
+      ctx.fillText(d?d.name:'—',[220,400,580][mi],y+40);
+    });
+  });
+  ctx.fillStyle='#A89094';ctx.font='12px sans-serif';ctx.textBaseline='alphabetic';
+  ctx.fillText('🍰 今天吃啥 · 家庭菜单',40,H-15);
+  const url=canvas.toDataURL('image/png');
+  const a=document.createElement('a');
+  a.href=url;a.download='本周菜单.png';a.click();
+  toast('已保存到下载 📷');
+}
+
+// 统计
+function renderStats(){
+  const total=DB.data.length;
+  const byCat={};
+  const byScore={high:0,mid:0,low:0};
+  CATS.forEach(c=>byCat[c.k]=0);
+  DB.data.forEach(d=>{
+    byCat[d.cat]=(byCat[d.cat]||0)+1;
+    const avg=((d.myScore||0)+(d.familyScore||0))/2;
+    if(avg>=4)byScore.high++;else if(avg>=3)byScore.mid++;else byScore.low++;
+  });
+  const recent=DB.data.filter(d=>d.lastMade).sort((a,b)=>b.lastMade.localeCompare(a.lastMade)).slice(0,3);
+
+  $('statsContent').innerHTML=`
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+      <div style="background:#fff;border-radius:22px;padding:18px;text-align:center;box-shadow:var(--shadow);border:2px solid var(--primary-light)">
+        <div style="font-size:36px;font-weight:800;color:var(--primary-dark)">${total}</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:4px">🍽️ 菜品总数</div>
+      </div>
+      <div style="background:#fff;border-radius:22px;padding:18px;text-align:center;box-shadow:var(--shadow);border:2px solid var(--mint)">
+        <div style="font-size:36px;font-weight:800;color:var(--mint-dark)">${byScore.high}</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:4px">⭐ 高分好菜</div>
+      </div>
+    </div>
+    <div class="section">
+      <h3>🏷️ 分类统计</h3>
+      ${CATS.map(c=>{
+        const n=byCat[c.k]||0;
+        const pct=total?(n/total*100):0;
+        return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+          <span style="width:60px;font-size:14px;font-weight:600">${c.emoji} ${c.k}</span>
+          <div style="flex:1;height:10px;background:#FFE4E9;border-radius:5px;overflow:hidden">
+            <div style="height:100%;background:linear-gradient(90deg,var(--primary),var(--primary-dark));border-radius:5px;width:${pct}%"></div>
+          </div>
+          <span style="font-size:13px;font-weight:700;color:var(--primary-dark);min-width:24px;text-align:right">${n}</span>
+        </div>`;
+      }).join('')}
+    </div>
+    ${recent.length?`<div class="section">
+      <h3>📅 最近做过</h3>
+      ${recent.map(d=>`<div style="display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px dashed var(--border)">
+        <div style="width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--primary-light),#FFF5F7);display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--primary-dark)">${esc(d.name[0])}</div>
+        <div style="flex:1">
+          <div style="font-size:14px;font-weight:600">${esc(d.name)}</div>
+          <div style="font-size:12px;color:var(--text2)">${d.lastMade} <span class="stars">${star(d.familyScore||0)}</span></div>
+        </div>
+      </div>`).join('')}
+    </div>`:''}
+  `;
+}
+
+function closeSheet(id){$(id).classList.remove('on')}
+
+// ====== 离线缓存：注册Service Worker ======
+if('serviceWorker' in navigator){
+  // 用Blob方式注册Service Worker（单文件方案）
+  const swCode = `
+    const CACHE='cook-app-v1';
+    self.addEventListener('install', e => {
+      self.skipWaiting();
+      e.waitUntil(
+        caches.open(CACHE).then(c => c.addAll(['./cook2.html','./index.html']).catch(()=>{}))
+      );
+    });
+    self.addEventListener('activate', e => { e.waitUntil(self.clients.claim()); });
+    self.addEventListener('fetch', e => {
+      e.respondWith(
+        caches.match(e.request).then(r => r || fetch(e.request).then(resp => {
+          const cp = resp.clone();
+          caches.open(CACHE).then(c => c.put(e.request, cp)).catch(()=>{});
+          return resp;
+        }).catch(() => caches.match(e.request)))
+      );
+    });
+  `;
+  const blob = new Blob([swCode], {type:'application/javascript'});
+  const swUrl = URL.createObjectURL(blob);
+  navigator.serviceWorker.register(swUrl).catch(()=>{});
+}
+
+DB.load();renderFilters();renderList();
+</script>
+</body>
+</html>
