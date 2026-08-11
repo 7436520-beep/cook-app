@@ -656,7 +656,8 @@ function renderList(){
       <div class="info">
         <div class="name">${esc(d.name)}<span class="tags">${tags}</span></div>
         <div class="sub">
-          <span class="stars">${star(d.familyScore||0)}</span>
+          <span class="stars">⭐${star(d.myScore||0)}</span>
+          <span class="stars">💖${star(d.familyScore||0)}</span>
           ${lastTxt?`<span>${lastTxt}</span>`:'<span style="color:var(--text3)">还没做过</span>'}
         </div>
       </div>
