@@ -37,6 +37,7 @@
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;overflow:hidden;-webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%}
+#app-wrap{height:100%;padding-top:env(safe-area-inset-top,0px);box-sizing:border-box}
 body{overscroll-behavior:none}
 body{
   font-family:-apple-system,"SF Pro Rounded","PingFang SC","Helvetica Neue",sans-serif;
@@ -59,7 +60,7 @@ a{color:inherit;text-decoration:none}
 /* ====== 左侧菜单栏（深色版改为糖果粉色） ====== */
 .sidebar{
   width:240px;flex-shrink:0;background:var(--side);
-  padding:calc(var(--safeT) + 28px) 18px 18px;
+  padding:28px 18px 18px;
   display:flex;flex-direction:column;
   border-right:3px dashed #FFD6DD;
   overflow-y:auto;
@@ -115,7 +116,7 @@ a{color:inherit;text-decoration:none}
   min-width:0;
 }
 .topbar{
-  padding:calc(var(--safeT) + 18px) 24px 14px;
+  padding:18px 24px 14px;
   background:var(--bg);
   display:flex;flex-direction:column;gap:14px;
   flex-shrink:0;
@@ -278,11 +279,13 @@ a{color:inherit;text-decoration:none}
   transform:translateY(100%);transition:transform .28s cubic-bezier(.32,.72,0,1);
   max-width:600px;margin:0 auto;
   display:flex;flex-direction:column;
+  padding-top:env(safe-area-inset-top,0px);
+  box-sizing:border-box;
 }
 .sheet.on{transform:translateY(0)}
 .sheet-bar{
   display:flex;align-items:center;gap:8px;
-  padding:calc(var(--safeT) + 10px) 16px 12px;
+  padding:10px 16px 12px;
   background:#fff;
   border-bottom:2px dashed var(--primary-light);
   flex-shrink:0;
@@ -436,6 +439,7 @@ a{color:inherit;text-decoration:none}
 </style>
 </head>
 <body>
+<div id="app-wrap">
 <div id="app">
 
 <!-- ====== 侧边栏 ====== -->
@@ -535,6 +539,7 @@ a{color:inherit;text-decoration:none}
   <div class="sheet-body" id="formBody"></div>
 </div>
 
+</div>
 </div>
 <div class="toast" id="toast"></div>
 
