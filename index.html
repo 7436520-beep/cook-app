@@ -505,6 +505,7 @@ a{color:inherit;text-decoration:none}
   <div class="sheet-bar">
     <button class="cancel" onclick="closeSheet('detailSheet')">‹ 返回</button>
     <span class="title">菜品详情</span>
+    <button class="save" id="detailEdit" style="background:var(--mint);margin-left:auto;margin-right:8px">✏️ 编辑</button>
     <button class="del" id="detailDel">删除</button>
   </div>
   <div class="sheet-body" id="detailBody"></div>
@@ -674,6 +675,7 @@ function openDetail(id){
       </div>
       <div style="height:20px"></div>
     </div>`;
+  $('detailEdit').onclick=()=>{closeSheet('detailSheet');setTimeout(()=>openForm(id),300)};
   $('detailDel').onclick=()=>deleteDish(id);
   $('detailSheet').classList.add('on');
 }
