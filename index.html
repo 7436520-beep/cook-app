@@ -53,7 +53,7 @@ a{color:inherit;text-decoration:none}
 #app{
   display:flex;height:100%;max-width:1200px;margin:0 auto;
   position:relative;background:var(--bg);
-  min-height:0;
+  overflow:hidden;
 }
 
 /* ====== 左侧菜单栏（深色版改为糖果粉色） ====== */
@@ -62,6 +62,7 @@ a{color:inherit;text-decoration:none}
   padding:calc(var(--safeT) + 28px) 18px 18px;
   display:flex;flex-direction:column;
   border-right:3px dashed #FFD6DD;
+  overflow-y:auto;
 }
 .sidebar-logo{
   display:flex;align-items:center;gap:10px;
@@ -108,11 +109,16 @@ a{color:inherit;text-decoration:none}
 .sidebar-fab:active{transform:scale(.97)}
 
 /* ====== 右侧主区 ====== */
-.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;min-height:0}
+.main{
+  flex:1;position:relative;
+  display:flex;flex-direction:column;
+  min-width:0;
+}
 .topbar{
   padding:calc(var(--safeT) + 18px) 24px 14px;
   background:var(--bg);
   display:flex;flex-direction:column;gap:14px;
+  flex-shrink:0;
 }
 .page-title{font-size:26px;font-weight:800;color:var(--text)}
 .page-title .emoji{font-size:28px}
@@ -142,14 +148,13 @@ a{color:inherit;text-decoration:none}
 .pill .pico{font-size:14px}
 .pill.on .pico{filter:drop-shadow(0 1px 2px rgba(255,143,163,.3))}
 
-/* ====== 内容区 ====== */
+/* ====== 内容区：明确绝对定位高度，确保iOS可滚动 ====== */
+.page{flex:1;position:relative;min-height:0}
 .content{
-  flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  position:absolute;left:0;right:0;top:0;bottom:0;
+  overflow-y:auto;-webkit-overflow-scrolling:touch;
   overscroll-behavior:contain;
   padding:4px 24px 80px;
-  min-height:0;
-  -webkit-overflow-scrolling:touch;
-  touch-action:pan-y;
 }
 
 /* 菜品卡片 - 卡通圆角 */
@@ -219,7 +224,9 @@ a{color:inherit;text-decoration:none}
 
 /* ====== 随机抽菜页 ====== */
 .roulette-page{
-  flex:1;display:flex;flex-direction:column;
+  position:absolute;left:0;right:0;top:0;bottom:0;
+  overflow-y:auto;-webkit-overflow-scrolling:touch;
+  display:flex;flex-direction:column;
   align-items:center;justify-content:center;padding:24px;gap:24px;
 }
 .roulette-page .title{
@@ -270,7 +277,7 @@ a{color:inherit;text-decoration:none}
   position:fixed;inset:0;z-index:100;background:var(--bg);
   transform:translateY(100%);transition:transform .28s cubic-bezier(.32,.72,0,1);
   max-width:600px;margin:0 auto;
-  display:flex;flex-direction:column;overflow:hidden;
+  display:flex;flex-direction:column;
 }
 .sheet.on{transform:translateY(0)}
 .sheet-bar{
@@ -278,6 +285,7 @@ a{color:inherit;text-decoration:none}
   padding:calc(var(--safeT) + 10px) 16px 12px;
   background:#fff;
   border-bottom:2px dashed var(--primary-light);
+  flex-shrink:0;
 }
 .sheet-bar .cancel{
   color:var(--text2);font-size:15px;
@@ -295,7 +303,13 @@ a{color:inherit;text-decoration:none}
   padding:8px 16px;border-radius:16px;margin-left:auto;
 }
 .sheet-bar .title{font-size:18px;font-weight:800;flex:1;text-align:center;color:var(--text)}
-.sheet-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;min-height:0;touch-action:pan-y;padding:18px 0}
+.sheet-body{flex:1;position:relative;min-height:0}
+.sheet-scroll{
+  position:absolute;left:0;right:0;top:0;bottom:0;
+  overflow-y:auto;-webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
+  padding:18px 0 40px;
+}
 
 /* ====== 详情 ====== */
 .detail-photo{width:100%;height:240px;object-fit:cover;background:var(--bg)}
@@ -505,8 +519,8 @@ a{color:inherit;text-decoration:none}
   <div class="sheet-bar">
     <button class="cancel" onclick="closeSheet('detailSheet')">‹ 返回</button>
     <span class="title">菜品详情</span>
-    <button class="save" id="detailEdit" style="background:var(--mint);margin-left:auto;margin-right:8px">✏️ 编辑</button>
-    <button class="del" id="detailDel">删除</button>
+    <button class="save" id="detailEdit" style="background:var(--mint);margin-left:auto">✏️ 编辑</button>
+    <button class="del" id="detailDel" style="margin-left:0">🗑️ 删除</button>
   </div>
   <div class="sheet-body" id="detailBody"></div>
 </div>
@@ -642,7 +656,7 @@ function renderList(){
 function openDetail(id){
   const d=DB.get(id);if(!d)return;
   const photo=d.photo?`<img class="detail-photo" src="${d.photo}">`:`<div class="detail-nophoto">${esc(d.name[0]||'菜')}</div>`;
-  $('detailBody').innerHTML=`
+  $('detailBody').innerHTML=`<div class="sheet-scroll">
     ${photo}
     <div class="detail-pad">
       <div class="detail-name">${esc(d.name)}</div>
@@ -674,7 +688,8 @@ function openDetail(id){
         ${d.comment?`<div class="comment">💬 ${esc(d.comment)}</div>`:''}
       </div>
       <div style="height:20px"></div>
-    </div>`;
+    </div>
+  </div>`;
   $('detailEdit').onclick=()=>{closeSheet('detailSheet');setTimeout(()=>openForm(id),300)};
   $('detailDel').onclick=()=>deleteDish(id);
   $('detailSheet').classList.add('on');
@@ -698,6 +713,7 @@ function openForm(id){
   const timeHtml=TIMES.map(t=>`<button class="oc ${(d.time||'')===t.k?'on':''}" data-k="time" data-v="${t.k}" onclick="pickOc(this)">${t.label}</button>`).join('');
   const today=new Date().toISOString().slice(0,10);
   $('formBody').innerHTML=`
+    <div class="sheet-scroll">
     <div class="fg">
       <label>🍽️ 菜品名称</label>
       <input id="f_name" value="${esc(d.name||'')}" placeholder="如：番茄炒蛋">
@@ -720,6 +736,7 @@ function openForm(id){
     <div class="fg"><label>🎵 抖音做法链接</label><input id="f_dy" value="${esc(d.dyLink||'')}" placeholder="粘贴抖音菜谱视频链接"></div>
     <div class="fg"><label>📅 上次做的时间</label><input id="f_date" type="date" value="${d.lastMade||today}"></div>
     <div style="height:30px"></div>
+    </div>
   `;
   if(d.photo)pendingPhoto=d.photo;
   $('formSheet').classList.add('on');
@@ -868,6 +885,7 @@ function openMealPicker(){
   if(list.length===0){toast('先添加菜品再来规划');return}
   $('formTitle').textContent='🍽️ 选择菜品';
   $('formBody').innerHTML=`
+    <div class="sheet-scroll">
     <div style="padding:0 16px">
       <input id="pickerSearch" placeholder="🔍 搜索菜名..." oninput="filterPicker()" style="width:100%;background:#fff;border:2px solid var(--primary-light);border-radius:16px;padding:10px 16px;font-size:15px;margin-bottom:12px;outline:none;color:var(--text)">
     </div>
@@ -875,7 +893,9 @@ function openMealPicker(){
       <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--primary-light),#FFF5F7);display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--primary-dark);font-size:18px">${esc(d.name[0])}</div>
       <div style="flex:1"><div style="font-size:15px;font-weight:600">${esc(d.name)}</div><div style="font-size:12px;color:var(--text2)"><span class="mini-tag ${d.cat}">${d.cat}</span> ${star(d.familyScore||0)}</div></div>
       <span style="color:var(--primary);font-size:18px">›</span>
-    </div>`).join('')}</div>`;
+    </div>`).join('')}</div>
+    <div style="height:30px"></div>
+    </div>`;
   $('formSheet').classList.add('on');
 }
 function filterPicker(){
