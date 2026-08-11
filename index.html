@@ -36,7 +36,8 @@
   --safeB:env(safe-area-inset-bottom,0px);
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;overflow:hidden;-webkit-font-smoothing:antialiased}
+html,body{height:100%;overflow:hidden;-webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%}
+body{overscroll-behavior:none}
 body{
   font-family:-apple-system,"SF Pro Rounded","PingFang SC","Helvetica Neue",sans-serif;
   background:var(--bg);color:var(--text);font-size:15px;
@@ -52,6 +53,7 @@ a{color:inherit;text-decoration:none}
 #app{
   display:flex;height:100%;max-width:1200px;margin:0 auto;
   position:relative;background:var(--bg);
+  min-height:0;
 }
 
 /* ====== 左侧菜单栏（深色版改为糖果粉色） ====== */
@@ -106,7 +108,7 @@ a{color:inherit;text-decoration:none}
 .sidebar-fab:active{transform:scale(.97)}
 
 /* ====== 右侧主区 ====== */
-.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;min-height:0}
 .topbar{
   padding:calc(var(--safeT) + 18px) 24px 14px;
   background:var(--bg);
@@ -143,7 +145,11 @@ a{color:inherit;text-decoration:none}
 /* ====== 内容区 ====== */
 .content{
   flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
   padding:4px 24px 80px;
+  min-height:0;
+  -webkit-overflow-scrolling:touch;
+  touch-action:pan-y;
 }
 
 /* 菜品卡片 - 卡通圆角 */
@@ -289,7 +295,7 @@ a{color:inherit;text-decoration:none}
   padding:8px 16px;border-radius:16px;margin-left:auto;
 }
 .sheet-bar .title{font-size:18px;font-weight:800;flex:1;text-align:center;color:var(--text)}
-.sheet-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:18px 0}
+.sheet-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;min-height:0;touch-action:pan-y;padding:18px 0}
 
 /* ====== 详情 ====== */
 .detail-photo{width:100%;height:240px;object-fit:cover;background:var(--bg)}
